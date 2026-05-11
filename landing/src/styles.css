@@ -157,16 +157,24 @@ button {
 .landing {
   height: 100vh;
   height: 100dvh;
-  min-height: 620px;
   display: flex;
   flex-direction: column;
   align-items: center;
   /* Push the flex stack (subtitle + cards) into the lower half so it
-     sits clearly below the fixed-positioned MIA headline (top: 18vh). */
+     sits clearly below the fixed-positioned headline (top: 18vh). */
   justify-content: flex-start;
   padding: 38vh 28px 40px;
   gap: 28px;
   overflow: hidden;
+}
+
+/* min-height for desktop only — on phones we let the layout shrink
+   to the actual viewport instead of forcing a 620px floor that
+   forces overflow on shorter screens. */
+@media (min-width: 641px) {
+  .landing {
+    min-height: 620px;
+  }
 }
 
 .hero {
@@ -1410,5 +1418,212 @@ button {
   .mia-headline.is-settled {
     transition-duration: 0.2s;
     animation-duration: 0.2s;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Phone breakpoint — everything below ~640px viewport width.
+   Tightens spacing, shrinks the headline, hard-caps the pre-call
+   portrait, stacks the in-call stage, and keeps every interactive
+   element above the fold (or scrollable when truly unavoidable).
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  /* ── Landing ──────────────────────────────────────────────── */
+  .landing {
+    padding: 24vh 16px 24px;
+    gap: 20px;
+    overflow-y: auto;
+  }
+
+  .brand-logo {
+    height: 34px;
+  }
+
+  .mia-headline {
+    white-space: normal;
+    text-align: center;
+    width: calc(100% - 32px);
+    line-height: 1;
+  }
+
+  .mia-headline.is-intro {
+    font-size: clamp(40px, 11vw, 64px);
+    letter-spacing: -1.5px;
+  }
+
+  .mia-headline.is-settled {
+    top: 11vh;
+    font-size: clamp(34px, 9vw, 52px);
+    letter-spacing: -1px;
+  }
+
+  .hero-sub {
+    font-size: 15px;
+  }
+
+  .agents {
+    width: 100%;
+    max-width: 100%;
+    gap: 14px;
+  }
+
+  .card-name {
+    font-size: 18px;
+  }
+
+  /* ── Pre-call screen ──────────────────────────────────────── */
+  .call-screen .call-back-btn {
+    top: 14px;
+    left: 14px;
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .call-content {
+    grid-template-columns: 1fr;
+    padding: 60px 16px 24px;
+    gap: 16px;
+    /* Allow scroll on very short phones rather than clipping the
+       Start Call button. */
+    overflow-y: auto;
+    align-items: start;
+  }
+
+  .call-portrait-frameless {
+    max-height: 42vh;
+  }
+
+  .call-portrait-frameless img {
+    max-height: 42vh;
+  }
+
+  .call-eyebrow {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .call-name {
+    font-size: clamp(28px, 9vw, 40px);
+    letter-spacing: -1px;
+  }
+
+  .call-description {
+    font-size: 15px;
+  }
+
+  .call-bullets {
+    gap: 10px;
+  }
+
+  .call-bullets li {
+    font-size: 15px;
+    padding-left: 22px;
+  }
+
+  .call-details {
+    gap: 14px;
+    max-width: 100%;
+  }
+
+  .call-button {
+    align-self: stretch;
+    justify-content: center;
+    padding: 14px 28px;
+    font-size: 16px;
+    margin-top: 6px;
+  }
+
+  /* ── In-call (native call) ────────────────────────────────── */
+  .call-stage {
+    padding: 24px 16px 100px;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .call-stage-left {
+    gap: 14px;
+  }
+
+  .stage-portrait {
+    width: clamp(150px, 38vw, 200px);
+    max-height: 38vh;
+  }
+
+  .stage-eyebrow {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .stage-name {
+    font-size: clamp(20px, 5.5vw, 24px);
+  }
+
+  .stage-status {
+    font-size: 13px;
+  }
+
+  .call-stage-right {
+    height: auto;
+  }
+
+  .transcript-stream {
+    max-height: 34vh;
+    padding: 12px 4px 12px 14px;
+  }
+
+  .transcript-line {
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+
+  .transcript-line-speaker {
+    font-size: 9px;
+    letter-spacing: 1.4px;
+  }
+
+  .transcript-speaking-pill {
+    left: 14px;
+    bottom: -4px;
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+
+  .native-call-end,
+  .native-call-back {
+    bottom: 22px;
+    padding: 12px 22px;
+    font-size: 14px;
+  }
+
+  /* ── Footer pill ──────────────────────────────────────────── */
+  .bng-footer {
+    bottom: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    gap: 8px;
+  }
+
+  .bng-wordmark-text {
+    font-size: 11px;
+  }
+
+  .bng-wordmark-n {
+    font-size: 13px;
+  }
+}
+
+/* Extra-narrow phones (≤ 380 px) — Hi, I'm EVA needs one more nudge */
+@media (max-width: 380px) {
+  .mia-headline.is-settled {
+    top: 10vh;
+    font-size: clamp(30px, 8vw, 40px);
+  }
+
+  .landing {
+    padding-top: 22vh;
+  }
+
+  .agents {
+    gap: 10px;
   }
 }
