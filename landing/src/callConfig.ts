@@ -20,7 +20,7 @@ const COMMON_PARAMS = {
   client: "demo",
   interface: "web",
   email_id: EMAIL_ID,
-  id: 77,
+  id: 12,
   tts_model_name: "Eleven-Labs",
   asr_model: "Azure",
   user_selected_asr_model_LS: "Azure",
@@ -45,6 +45,14 @@ export interface LanguagePreset {
 }
 
 export const LANGUAGE_PRESETS: Record<string, LanguagePreset> = {
+  // Orange Maroc preset — matches the exact JSON spec supplied by the
+  // Orange Maroc team. Arabic primary with French + English fallback.
+  //
+  // Note on the codes (kept verbatim from the supplied payload):
+  //   • languageCode "ar-MR" is BCP-47 "Arabic (Mauritania)" while
+  //     countryCode is "MA" (Morocco). The MWC backend normalises this.
+  //   • "fr-Fr" is non-standard (Azure expects "fr-FR"). Preserved
+  //     exactly as given so the backend payload matches the spec.
   "ar-MR": {
     languageCode: "ar-MR",
     displayName: "Arabic (Morocco) Hanaa (Female)",
@@ -52,66 +60,9 @@ export const LANGUAGE_PRESETS: Record<string, LanguagePreset> = {
       "مرحبا! أنا إيفا. ماذا تريد أن تناقش؟ سواء كنت بحاجة إلى نصيحة، دردشة، أو مجرد شخص للتحدث معه، أنا هنا من أجلك!",
     countryCode: "MA",
     countrySpecificLanguageName: "Arabic (Morocco)",
-    countrySpecificLanguageId: "ar-MA,fr-FR,en-US",
-    additionalLanguages: ["fr-FR", "en-US"],
+    countrySpecificLanguageId: "ar-MA,fr-Fr,en-US",
+    additionalLanguages: ["fr-Fr", "ar-MA", "en-US"],
     userSelectedLanguageLS: "Arabic",
-  },
-  "ar-AE": {
-    languageCode: "ar-AE",
-    displayName: "Arabic (AE) Jessica (Female)",
-    sampleText:
-      "مرحباً! أنا إيفا. ماذا ترغب في مناقشته؟ سواء كنت بحاجة إلى نصيحة، أو محادثة، أو مجرد شخص للتحدث معه، أنا هنا من أجلك!",
-    countryCode: "AE",
-    countrySpecificLanguageName: "Arabic (UAE)",
-    countrySpecificLanguageId: "ar-AE,en-US",
-    additionalLanguages: ["en-US"],
-    userSelectedLanguageLS: "Arabic",
-  },
-  "ar-SA": {
-    languageCode: "ar-SA",
-    displayName: "Arabic (Saudi) (Female)",
-    sampleText: "مرحباً! أنا إيفا. كيف يمكنني مساعدتك اليوم؟",
-    countryCode: "SA",
-    countrySpecificLanguageName: "Arabic (Saudi Arabia)",
-    countrySpecificLanguageId: "ar-SA,en-US",
-    additionalLanguages: ["en-US"],
-    userSelectedLanguageLS: "Arabic",
-  },
-  "en-US": {
-    languageCode: "en-US",
-    displayName: "English (US) (Female)",
-    sampleText:
-      "Hi! I'm MIA. What would you like to talk about? Whether you need advice, a chat, or just someone to listen — I'm here for you.",
-    countryCode: "US",
-    countrySpecificLanguageName: "English (US)",
-    countrySpecificLanguageId: "en-US",
-    additionalLanguages: [],
-    userSelectedLanguageLS: "English",
-  },
-  "fr-FR": {
-    languageCode: "fr-FR",
-    displayName: "French (France) (Female)",
-    sampleText:
-      "Bonjour ! Je suis MIA. De quoi aimeriez-vous parler ? Que vous ayez besoin d'un conseil, d'une discussion ou simplement de quelqu'un à qui parler, je suis là pour vous.",
-    countryCode: "FR",
-    countrySpecificLanguageName: "French (France)",
-    countrySpecificLanguageId: "fr-FR,en-US",
-    additionalLanguages: ["en-US"],
-    userSelectedLanguageLS: "French",
-  },
-  // Orange Maroc preset — French primary, country MA (Morocco).
-  // ⚠️ PLACEHOLDER VALUES — overwrite displayName / sampleText / voice
-  // and any other fields once the real Orange Maroc JSON spec arrives.
-  "fr-MA": {
-    languageCode: "fr-FR",
-    displayName: "French (France) (Female)",
-    sampleText:
-      "Bonjour ! Je suis EVA, votre assistante vocale Orange Maroc. Comment puis-je vous aider aujourd'hui ?",
-    countryCode: "MA",
-    countrySpecificLanguageName: "French (France)",
-    countrySpecificLanguageId: "fr-FR",
-    additionalLanguages: [],
-    userSelectedLanguageLS: "French",
   },
 };
 

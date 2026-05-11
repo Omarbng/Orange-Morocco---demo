@@ -1,10 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────
 // Agent catalogue — Orange Maroc demo.
 //
-// ⚠️ PLACEHOLDERS: `assistantId`, `voiceId` and `typeSlug` below are
-// guesses based on the Moov naming convention. Replace them with the
-// real values from the Orange Maroc backend JSON spec before this build
-// goes live.
+// IDs and slugs below match the supplied Orange Maroc JSON spec exactly.
 // ─────────────────────────────────────────────────────────────────────
 
 import { buildCallConfig, type AgentSpec } from "./callConfig";
@@ -34,11 +31,10 @@ export const agents: Agent[] = [
       "Delivers messages, checks availability and more",
     ],
     flavor: "assistant",
-    // TODO replace with real Orange Maroc backend values
-    assistantId: "PLACEHOLDER_PA_ID",
-    voiceId: "PLACEHOLDER_VOICE_ID",
-    language: "fr-MA",
-    typeSlug: "orange---maroc---personal-assistant",
+    assistantId: "7382",
+    voiceId: "OfGMGmhShO8iL9jCkXy8",
+    language: "ar-MR",
+    typeSlug: "orange-morocco---personal-assistant",
   },
   {
     id: "ai-companion",
@@ -46,11 +42,10 @@ export const agents: Agent[] = [
     description:
       "Ask EVA anything. A smart, general-purpose voice companion for Orange Maroc — answers open questions, shares live news and events, explains and informs, and is trained to skip restricted topics.",
     flavor: "companion",
-    // TODO replace with real Orange Maroc backend values
-    assistantId: "PLACEHOLDER_AC_ID",
-    voiceId: "PLACEHOLDER_VOICE_ID",
-    language: "fr-MA",
-    typeSlug: "orange---maroc---ai-companion",
+    assistantId: "4424",
+    voiceId: "OfGMGmhShO8iL9jCkXy8",
+    language: "ar-MR",
+    typeSlug: "orange-morocco---ai-companion",
   },
 ];
 
