@@ -1,0 +1,1414 @@
+/* ─────────────────────────────────────────────────────────────────
+   Design tokens — Orange Maroc palette. Near-black warm background
+   with Orange brand orange (#FF7900) as primary; white as the
+   secondary highlight. Brand color confirmed against the official
+   Orange Maroc SVG logo.
+   ───────────────────────────────────────────────────────────────── */
+:root {
+  --brand: #FF7900;           /* Orange brand primary (Pantone 151 C equivalent) */
+  --brand-soft: #FFA040;      /* Lighter peach for glows/hover */
+  --brand-bright: #FFFFFF;    /* White — secondary highlight from the logo */
+  --bg-deep: #0a0604;         /* Near-black with warm undertone */
+  --bg-mid: #160a04;          /* Deep warm charcoal */
+  --bg-hi: #2a1808;           /* Dim warm backdrop */
+  --text: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.72);
+  --text-dim: rgba(255, 255, 255, 0.4);
+  --chip-bg: rgba(255, 255, 255, 0.08);
+  --chip-border: rgba(255, 255, 255, 0.15);
+  --card-border: rgba(255, 255, 255, 0.08);
+  /* Brand rgba triplets for inline use in gradients/shadows */
+  --brand-rgb: 255, 121, 0;
+  --brand-soft-rgb: 255, 160, 64;
+  --accent-rgb: 255, 255, 255;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* landing is lock-screen: no scroll */
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+  isolation: isolate;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Ambient background — drifting brand radial glows over near-black.
+   ───────────────────────────────────────────────────────────────── */
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(
+      ellipse at 82% 18%,
+      rgba(255, 160, 64, 0.28) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 18% 82%,
+      rgba(255, 121, 0, 0.32) 0%,
+      transparent 55%
+    ),
+    linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-mid) 55%, #0a0400 100%);
+  animation: ambient-drift 22s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-drift {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(-6deg);
+  }
+}
+
+.ambient-grain {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+}
+
+.ambient-vignette {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 50%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Top bar — Moov Mauritel logo only (no language chip).
+   ───────────────────────────────────────────────────────────────── */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 24px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+
+.topbar > * {
+  pointer-events: auto;
+}
+
+/* Moov Mauritel logo in the top-left corner. SVG from public/ with a
+   subtle brand glow underneath. The Moov SVG has a wider aspect ratio
+   than a wordmark, so we size by height and let width auto-fit. */
+.brand-logo {
+  display: block;
+  height: 44px;
+  width: auto;
+  filter: drop-shadow(0 4px 18px rgba(255, 121, 0, 0.45));
+  animation: logo-in 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.2) 1.9s both;
+}
+
+@keyframes logo-in {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Landing layout — FIXED viewport. Hero compact, cards sit below.
+   No scroll anywhere.
+   ───────────────────────────────────────────────────────────────── */
+.landing {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Push the flex stack (subtitle + cards) into the lower half so it
+     sits clearly below the fixed-positioned MIA headline (top: 18vh). */
+  justify-content: flex-start;
+  padding: 38vh 28px 40px;
+  gap: 28px;
+  overflow: hidden;
+}
+
+.hero {
+  text-align: center;
+  max-width: 720px;
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.hero-sub {
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 500;
+  color: var(--text-muted);
+  animation: hero-fade-up 0.9s cubic-bezier(0.2, 0.9, 0.3, 1) 2.4s both;
+}
+
+/* ── Persistent headline. Animates from centered+huge to hero-slot+small.
+   The element is the same across both phases — no swap, no fade-out.
+
+   Important: only `opacity` and `filter` are driven by the entry @keyframe.
+   `top`, `transform`, and `font-size` are driven exclusively by transitions.
+   Mixing both on the same property causes a visible snap when the class
+   flips from is-intro to is-settled. */
+.mia-headline {
+  position: fixed;
+  left: 50%;
+  z-index: 18;
+  /* Default state = is-intro position so the first paint never triggers
+     a transform/top transition (no opening swoop from translate(0,0)). */
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(64px, 9vw, 110px);
+  font-weight: 900;
+  letter-spacing: -3px;
+  line-height: 0.95;
+  white-space: nowrap;
+  text-shadow: 0 0 60px rgba(var(--brand-rgb), 0.5);
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(10px);
+  transition:
+    top 0.95s cubic-bezier(0.65, 0, 0.35, 1),
+    transform 0.95s cubic-bezier(0.65, 0, 0.35, 1),
+    font-size 0.95s cubic-bezier(0.65, 0, 0.35, 1);
+  animation: mia-enter 0.7s cubic-bezier(0.25, 0.9, 0.3, 1) 0.15s forwards;
+}
+
+@keyframes mia-enter {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* is-intro is the resting initial state — no extra rules needed. */
+
+.mia-headline.is-settled {
+  top: 18vh;
+  transform: translate(-50%, 0);
+  font-size: clamp(52px, 7.6vw, 92px);
+}
+
+.mia-headline-accent {
+  background: linear-gradient(
+    135deg,
+    var(--brand) 0%,
+    #ffffff 50%,
+    var(--brand-soft) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 4s ease-in-out infinite;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Agent cards — "movie poster" layout: portrait fills the whole
+   card, name + CTA overlay at the bottom.
+   ───────────────────────────────────────────────────────────────── */
+.agents {
+  display: grid;
+  grid-template-columns: repeat(2, 240px);
+  gap: 28px;
+  perspective: 1400px;
+}
+
+@media (max-width: 620px) {
+  .agents {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 460px;
+    width: 100%;
+    gap: 18px;
+  }
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 24px;
+  overflow: hidden;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.04) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  border: 1px solid var(--card-border);
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1),
+    border-color 0.35s,
+    box-shadow 0.35s;
+  animation: card-in 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  padding: 0;
+}
+
+.card:nth-child(1) {
+  animation-delay: 2.8s;
+}
+.card:nth-child(2) {
+  animation-delay: 3.05s;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card:hover {
+  border-color: var(--brand-soft);
+  box-shadow:
+    0 30px 80px -20px rgba(0, 0, 0, 0.7),
+    0 0 80px -10px rgba(255, 160, 64, 0.55);
+}
+
+/* Cursor-tracked brand glow behind the card */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    rgba(255, 160, 64, 0.55) 0%,
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(20px);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+/* Portrait = full card background */
+.card-portrait {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.card-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  transition: transform 0.8s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.card:hover .card-portrait img {
+  transform: scale(1.06);
+}
+
+/* Animated orb shown while user hasn't dropped in the portrait PNG */
+.card-portrait-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(255, 160, 64, 0.25) 0%,
+    rgba(0, 0, 0, 0) 60%
+  );
+}
+
+.card-portrait-fallback .orb {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 30% 30%,
+    var(--brand-bright),
+    var(--brand) 40%,
+    var(--bg-deep) 90%
+  );
+  box-shadow:
+    0 0 100px var(--brand),
+    inset 0 0 50px var(--brand-soft);
+  animation: orb-float 6s ease-in-out infinite;
+}
+
+.card-portrait-fallback .ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  animation: ring-rotate 18s linear infinite;
+}
+
+.card-portrait-fallback .ring.r1 {
+  width: 220px;
+  height: 220px;
+  border-style: dashed;
+}
+.card-portrait-fallback .ring.r2 {
+  width: 280px;
+  height: 280px;
+  animation-duration: 28s;
+  animation-direction: reverse;
+}
+
+@keyframes orb-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes ring-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Text overlay at the bottom of the card */
+.card-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 68px 18px 18px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.4) 35%,
+    rgba(0, 0, 0, 0.92) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-name {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+  color: white;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.7);
+}
+
+.card-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.card-cta-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.3s;
+}
+
+.card:hover .card-cta-label {
+  color: var(--brand-soft);
+}
+
+.card-cta-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 24px rgba(255, 121, 0, 0.6);
+  transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.4);
+}
+
+.card:hover .card-cta-arrow {
+  transform: translateX(4px) scale(1.08);
+}
+
+.card-cta-arrow svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Call screen — name + description + Start Call (that's it).
+   ───────────────────────────────────────────────────────────────── */
+.call-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  animation: screen-in 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.05) both;
+}
+
+@keyframes screen-in {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Pre-call screen relies on the same global ambient as the hero
+   (.ambient-bg / .ambient-grain / .ambient-vignette in App.tsx).
+   No bespoke backdrop here — keeps every page visually unified. */
+
+.call-back-btn {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  transition: background 0.2s;
+}
+
+.call-back-btn:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.call-content {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  padding: 80px 64px;
+  gap: 48px;
+}
+
+@media (max-width: 900px) {
+  .call-content {
+    grid-template-columns: 1fr;
+    padding: 80px 28px 40px;
+    gap: 24px;
+  }
+}
+
+/* Frameless portrait on the call screen — no rounded box, no shadow
+   framing. EVA "lives" directly on the backdrop. Kept modest in size
+   so the name + description have breathing room. */
+.call-portrait-frameless {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 80vh;
+  animation: portrait-in 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.05) 0.1s both;
+}
+
+@keyframes portrait-in {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.call-portrait-frameless img {
+  max-width: 100%;
+  max-height: 76vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  /* Soft brand aura around EVA (no rectangular box, just a glow) */
+  filter: drop-shadow(0 30px 80px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 60px rgba(255, 121, 0, 0.22));
+  animation: portrait-breathe 7s ease-in-out infinite;
+}
+
+@keyframes portrait-breathe {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.call-portrait-fallback {
+  position: relative;
+  width: 420px;
+  height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.call-details {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 480px;
+}
+
+.call-name {
+  font-size: clamp(44px, 6vw, 72px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 0.95;
+  animation: rise-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.2s both;
+}
+
+.call-description {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--text-muted);
+  animation: rise-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.3s both;
+}
+
+.call-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: rise-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.3s both;
+}
+
+.call-bullets li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--text);
+  letter-spacing: 0.1px;
+}
+
+.call-bullets li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 14px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--brand-soft),
+    var(--brand-bright)
+  );
+  box-shadow: 0 0 12px rgba(var(--brand-rgb), 0.5);
+}
+
+.call-button {
+  align-self: flex-start;
+  margin-top: 14px;
+  padding: 18px 42px;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    var(--brand) 0%,
+    var(--brand-soft) 100%
+  );
+  color: white;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow:
+    0 20px 40px -10px rgba(255, 121, 0, 0.65),
+    0 0 60px -10px rgba(255, 160, 64, 0.55);
+  transition:
+    transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.3),
+    box-shadow 0.2s;
+  animation:
+    rise-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.45s both,
+    call-pulse 2.4s ease-in-out infinite 1s;
+}
+
+.call-button:hover {
+  transform: translateY(-3px) scale(1.03);
+}
+
+.call-button:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+@keyframes call-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 20px 40px -10px rgba(255, 121, 0, 0.65),
+      0 0 60px -10px rgba(255, 160, 64, 0.55);
+  }
+  50% {
+    box-shadow:
+      0 20px 50px -10px rgba(255, 121, 0, 0.85),
+      0 0 100px -5px rgba(255, 160, 64, 0.75);
+  }
+}
+
+.call-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Quiet toast shown only if Start Call is pressed before a key is set.
+   Lives in the layout so the button doesn't jump; fades in/out. */
+.call-notice {
+  max-width: 340px;
+  margin-top: 10px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(255, 121, 0, 0.12);
+  border: 1px solid rgba(255, 160, 64, 0.35);
+  color: var(--brand-soft);
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+
+.call-notice.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.call-eyebrow {
+  font-size: 11px;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--brand-soft);
+  opacity: 0.85;
+  margin-bottom: 4px;
+  animation: rise-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) 0.15s both;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Drifting particles (decorative, purely CSS)
+   ───────────────────────────────────────────────────────────────── */
+.particles {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  filter: blur(1px);
+  box-shadow: 0 0 10px var(--brand-soft);
+  animation: particle-drift linear infinite;
+}
+
+@keyframes particle-drift {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--p-opacity, 0.35);
+  }
+  90% {
+    opacity: var(--p-opacity, 0.35);
+  }
+  to {
+    transform: translate3d(var(--p-dx, -100px), var(--p-dy, -200px), 0);
+    opacity: 0;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Typewriter cursor — blinks next to the typing text
+   ───────────────────────────────────────────────────────────────── */
+.cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--brand-soft);
+  animation: blink 1s steps(2, start) infinite;
+  font-weight: 400;
+}
+
+.cursor-sub {
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* Subtitle needs a minimum height so layout doesn't jump as the
+   typewriter types and erases. */
+.hero-sub {
+  min-height: 1.8em;
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   BlackNGreen footer — tiny attribution in the bottom-right.
+   ───────────────────────────────────────────────────────────────── */
+.bng-footer {
+  position: fixed;
+  bottom: 18px;
+  right: 22px;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px 10px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  font-size: 11px;
+  color: var(--text-muted);
+  pointer-events: none;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+  animation: rise-in 0.8s ease 3.2s both;
+}
+
+.bng-by {
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.78);
+  white-space: nowrap;
+}
+
+/* Light-theme wordmark — purpose-built for dark backgrounds.
+   White "black" + green "N" + white "green", premium spacing. */
+.bng-wordmark {
+  display: inline-flex;
+  align-items: center;
+}
+
+.bng-wordmark-text {
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  color: #ffffff;
+  text-transform: lowercase;
+  line-height: 1;
+  text-shadow: 0 0 12px rgba(143, 193, 62, 0.35);
+}
+
+.bng-wordmark-n {
+  color: #8fc13e;
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: 0;
+  text-shadow:
+    0 0 10px rgba(143, 193, 62, 0.7),
+    0 0 18px rgba(143, 193, 62, 0.45);
+}
+
+
+
+/* ─────────────────────────────────────────────────────────────────
+   Native call UI — two-column premium stage.
+   Left: large portrait with breathing aura.
+   Right: clean flowing transcript text (no bubbles, no boxes).
+   ───────────────────────────────────────────────────────────────── */
+.native-call {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  /* Heavy frosted glass over the underlying page (pre-call portrait/CTA),
+     while still letting the global ambient gradient bleed through faintly.
+     Combined with .call-screen.is-in-call hiding .call-content, the
+     in-call surface reads as fully clean. */
+  background: rgba(5, 8, 16, 0.86);
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+  isolation: isolate;
+  animation: call-fade-in 0.45s ease both;
+}
+
+/* When NativeCall mounts, fade out and lock the pre-call content.
+   `.call-content` is the wrapper around portrait + Start Call; hiding
+   it kills the bleed-through behind the native call surface. */
+.call-screen.is-in-call .call-content {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes call-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.call-stage {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 48px;
+  padding: 56px 64px 120px;
+  align-items: center;
+  min-height: 0;
+}
+
+@media (max-width: 980px) {
+  .call-stage {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    padding: 44px 28px 110px;
+    align-items: start;
+  }
+}
+
+/* ── LEFT: portrait + identity ─────────────────────────────────── */
+.call-stage-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  min-height: 0;
+  animation: stage-rise 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) 0.15s both;
+}
+
+@keyframes stage-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stage-portrait {
+  position: relative;
+  width: clamp(200px, 22vw, 320px);
+  max-height: 60vh;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.stage-portrait img {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 30px 80px -20px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(var(--brand-rgb), 0.25) inset;
+  transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.stage-portrait-fallback {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    var(--brand-soft),
+    var(--brand) 55%,
+    var(--bg-mid) 100%
+  );
+  border: 2px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Breathing aura — soft radial bloom that subtly pulses always,
+   intensifies when MIA is speaking. */
+.stage-aura {
+  position: absolute;
+  inset: -12%;
+  z-index: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(var(--brand-rgb), 0.45) 0%,
+      rgba(var(--brand-rgb), 0.18) 40%,
+      transparent 72%
+    );
+  filter: blur(28px);
+  opacity: 0.65;
+  animation: aura-breathe 5s ease-in-out infinite;
+}
+
+.stage-portrait::after {
+  /* Outer accent ring — orange tinted shimmer */
+  content: "";
+  position: absolute;
+  inset: -2%;
+  z-index: 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(var(--accent-rgb), 0.55) 90deg,
+    transparent 180deg,
+    rgba(var(--brand-rgb), 0.55) 270deg,
+    transparent 360deg
+  );
+  filter: blur(8px);
+  opacity: 0.35;
+  animation: aura-rotate 14s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes aura-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.85;
+  }
+}
+
+@keyframes aura-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.stage-portrait.speaking .stage-aura {
+  animation-duration: 1.4s;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(var(--accent-rgb), 0.55) 0%,
+      rgba(var(--brand-rgb), 0.3) 45%,
+      transparent 75%
+    );
+}
+
+.stage-portrait.speaking img {
+  transform: scale(1.015);
+}
+
+.stage-portrait.ringing img,
+.stage-portrait.connecting img,
+.stage-portrait.requesting-mic img {
+  animation: portrait-pulse 2s ease-in-out infinite;
+}
+
+@keyframes portrait-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 30px 80px -20px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(var(--brand-rgb), 0.25) inset,
+      0 0 0 0 rgba(var(--brand-rgb), 0.5);
+  }
+  50% {
+    box-shadow:
+      0 30px 80px -20px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(var(--brand-rgb), 0.4) inset,
+      0 0 0 14px rgba(var(--brand-rgb), 0);
+  }
+}
+
+.stage-identity {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.stage-eyebrow {
+  font-size: 11px;
+  letter-spacing: 2.4px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--brand-soft);
+  opacity: 0.85;
+}
+
+.stage-name {
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  text-shadow: 0 0 40px rgba(var(--brand-rgb), 0.35);
+}
+
+.stage-status {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 0.3px;
+}
+
+.stage-status.connected {
+  color: var(--brand-soft);
+}
+
+.stage-status.error {
+  color: #ff6b6b;
+}
+
+.stage-status.ringing,
+.stage-status.connecting,
+.stage-status.requesting-mic {
+  color: var(--brand-soft);
+}
+
+.stage-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #46d36b;
+  box-shadow: 0 0 10px #46d36b;
+  animation: dot-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* ── RIGHT: clean flowing transcript ───────────────────────────── */
+.call-stage-right {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  animation: stage-rise 0.8s cubic-bezier(0.2, 0.9, 0.3, 1) 0.32s both;
+}
+
+.transcript-stream {
+  flex: 0 1 auto;
+  max-height: min(60vh, 540px);
+  overflow-y: auto;
+  padding: 16px 8px 16px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+.transcript-stream::-webkit-scrollbar {
+  width: 6px;
+}
+
+.transcript-stream::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 3px;
+}
+
+.transcript-stream-hint {
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--text-dim);
+  font-style: italic;
+  letter-spacing: 0.2px;
+  padding: 12px 0;
+}
+
+.transcript-line {
+  margin: 0 0 22px 0;
+  font-size: clamp(17px, 1.45vw, 21px);
+  line-height: 1.55;
+  letter-spacing: 0.1px;
+  font-weight: 400;
+  animation: line-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.transcript-line-speaker {
+  font-size: 10px;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.65;
+}
+
+.transcript-line.agent .transcript-line-speaker {
+  color: var(--brand-soft);
+}
+
+.transcript-line.user .transcript-line-speaker {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.transcript-line-text {
+  color: var(--text);
+}
+
+.transcript-line.agent .transcript-line-text {
+  color: #ffffff;
+  text-shadow: 0 0 18px rgba(var(--brand-rgb), 0.25);
+}
+
+.transcript-line.user .transcript-line-text {
+  color: rgba(255, 255, 255, 0.78);
+  font-weight: 400;
+}
+
+.transcript-line.streaming .transcript-line-text::after {
+  content: "▍";
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--brand-soft);
+  animation: caret-blink 0.9s steps(2) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.transcript-speaking-pill {
+  position: absolute;
+  bottom: -8px;
+  left: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(var(--brand-rgb), 0.15);
+  border: 1px solid rgba(var(--brand-rgb), 0.35);
+  color: var(--brand-soft);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: line-in 0.4s ease both;
+}
+
+.transcript-speaking-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  box-shadow: 0 0 8px var(--brand-soft);
+  animation: dot-pulse 1.2s ease-in-out infinite;
+}
+
+/* ── Bottom controls ───────────────────────────────────────────── */
+.native-call-end,
+.native-call-back {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.native-call-end {
+  background: linear-gradient(135deg, #f04747 0%, #d93838 100%);
+  color: #fff;
+  border: none;
+  box-shadow:
+    0 12px 32px -10px rgba(240, 71, 71, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+}
+
+.native-call-end:hover {
+  transform: translateX(-50%) translateY(-1px);
+  box-shadow:
+    0 18px 40px -10px rgba(240, 71, 71, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+}
+
+.native-call-back {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.native-call-back:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(-50%) translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mia-headline,
+  .mia-headline.is-intro,
+  .mia-headline.is-settled {
+    transition-duration: 0.2s;
+    animation-duration: 0.2s;
+  }
+}
