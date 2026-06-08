@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { VertoClient, type CallStatus, type TranscriptEntry } from "./verto";
+import {
+  GeminiShareClient,
+  type CallStatus,
+  type TranscriptEntry,
+} from "./geminiShare";
 import { getCallConfig, type Agent } from "./agents";
 
 interface Props {
@@ -29,7 +33,7 @@ export const NativeCall: React.FC<Props> = ({ agent, onEnd }) => {
   const [aiSpeaking, setAiSpeaking] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [transcript, setTranscript] = useState<TranscriptEntry[]>([]);
-  const clientRef = useRef<VertoClient | null>(null);
+  const clientRef = useRef<GeminiShareClient | null>(null);
   const timerRef = useRef<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [imgFailed, setImgFailed] = useState(false);
@@ -60,7 +64,7 @@ export const NativeCall: React.FC<Props> = ({ agent, onEnd }) => {
       return;
     }
 
-    const client = new VertoClient({
+    const client = new GeminiShareClient({
       onStatusChange: (s, msg) => {
         setStatus(s);
         if (msg) setErrMsg(msg);

@@ -1,15 +1,21 @@
 // ─────────────────────────────────────────────────────────────────────
 // Agent catalogue — Orange Maroc demo.
 //
-// IDs and slugs below match the supplied Orange Maroc JSON spec exactly.
+// Each agent maps to an Agent Foundry (Nexiva / Gemini Live) share link:
+//   https://demo-agentfoundry.bngrenew.com/converse/share/<shareKey>
+// The UI dials the agent natively over the share WebSocket — see
+// geminiShare.ts. To add an agent: create it in the Agent Foundry, copy
+// its share key, and add one entry below.
 // ─────────────────────────────────────────────────────────────────────
 
-import { buildCallConfig, type AgentSpec } from "./callConfig";
-import type { CallConfig } from "./verto";
+import type { CallStatus, ShareCallConfig } from "./geminiShare";
+
+export type { CallStatus };
+export type { TranscriptEntry } from "./geminiShare";
 
 export type AgentFlavor = "companion" | "assistant";
 
-export interface Agent extends AgentSpec {
+export interface Agent {
   id: string;
   name: string;
   /** Long-form paragraph used when no `bullets` are supplied. */
@@ -17,7 +23,12 @@ export interface Agent extends AgentSpec {
   /** Optional bullet list shown instead of `description` on the call screen. */
   bullets?: string[];
   flavor: AgentFlavor;
+  /** Share key from the Agent Foundry (last segment of the /share/<key> URL). */
+  shareKey: string;
 }
+
+// Agent Foundry base — everything mounts under /converse.
+export const FOUNDRY_BASE = "https://demo-agentfoundry.bngrenew.com/converse";
 
 export const agents: Agent[] = [
   {
@@ -31,10 +42,8 @@ export const agents: Agent[] = [
       "Delivers messages, checks availability and more",
     ],
     flavor: "assistant",
-    assistantId: "7382",
-    voiceId: "OfGMGmhShO8iL9jCkXy8",
-    language: "ar-MR",
-    typeSlug: "orange-morocco---personal-assistant",
+    // Agent Foundry: "Orange - Morocco - PA" (Salma, voice Sulafat)
+    shareKey: "kySxCrCNnV",
   },
   {
     id: "ai-companion",
@@ -42,12 +51,13 @@ export const agents: Agent[] = [
     description:
       "Ask EVA anything. A smart, general-purpose voice companion for Orange Maroc — answers open questions, shares live news and events, explains and informs, and is trained to skip restricted topics.",
     flavor: "companion",
-    assistantId: "4424",
-    voiceId: "OfGMGmhShO8iL9jCkXy8",
-    language: "ar-MR",
-    typeSlug: "orange-morocco---ai-companion",
+    // Agent Foundry: "Orange - Morocco - AMA" (Yasmine, voice Puck)
+    shareKey: "uZXyzQEsAC",
   },
 ];
 
-/** Resolve the full Verto `CallConfig` for an agent. */
-export const getCallConfig = (agent: Agent): CallConfig => buildCallConfig(agent);
+/** Resolve the Agent Foundry share config for an agent. */
+export const getCallConfig = (agent: Agent): ShareCallConfig => ({
+  base: FOUNDRY_BASE,
+  shareKey: agent.shareKey,
+});
